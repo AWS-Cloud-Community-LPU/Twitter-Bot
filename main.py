@@ -15,7 +15,6 @@ import re
 from datetime import datetime
 import time
 import secrets as keys
-import random
 from os import path
 import feedparser
 import tweepy
@@ -30,8 +29,8 @@ def message_creator(entry) -> str:
     cleanr = re.compile(
         '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
     summary = re.sub(cleanr, '', entry.summary)
-    title_length = len(entry.title) + 40
-    summary_length = 280 - title_length
+    extra_length = len(entry.title) + 31
+    summary_length = 280 - extra_length
     message = entry.title + "\n\n" + \
         summary[:summary_length] + "... " + entry.link
     return message
@@ -83,10 +82,14 @@ def main():
         time_status = check_time()
         print(entry.title, file=open(C.TITLE_STORE, 'a+'))
         message = message_creator(entry)
-        print(len(message))
-        print(message)
-        api.update_status(message)
+        try:
+            api.update_status(message)
+        except TweepError:
+            print(f"Error at: {datetime.now()} with:\n{message}\n\n", file=open(
+                C.LOG_FILE, 'a+'))
 
 
 if __name__ == "__main__":
+    print(f"\n\nBot Started at {datetime.now()}\n",
+          file=open(C.LOG_FILE, 'a+'))
     main()

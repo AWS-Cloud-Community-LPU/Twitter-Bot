@@ -9,9 +9,10 @@ __pycache__/
 # Auth Toks File
 secrets.py
 
-#logs and title file
+#logs and title file and testing files
 titles.txt
 logs.txt
+test.py
 
 # Distribution / packaging
 .Python
