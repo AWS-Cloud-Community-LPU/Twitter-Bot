@@ -9,6 +9,10 @@ __pycache__/
 # Auth Toks File
 secrets.py
 
+#logs and title file
+titles.txt
+logs.txt
+
 # Distribution / packaging
 .Python
 bot-env
