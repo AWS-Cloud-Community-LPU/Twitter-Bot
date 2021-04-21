@@ -22,25 +22,35 @@ import constants as C
 
 
 def message_creator(entry) -> str:
-    """Returns news in a proper format
+    """
+    Returns news in a proper format
+
     Keyword arguments:
         entry : a perticular entry of rss feed used for extracting data.
     """
     cleanr = re.compile(
         '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
     summary = re.sub(cleanr, '', entry.summary)
-    extra_length = len(entry.title) + 31
-    summary_length = 280 - extra_length
+    extra_length = len(entry.title) + 31    # Twitter URL Shortner: 31 Character
+    summary_length = 280 - extra_length     # Max tweet length: 280 Character
     message = entry.title + "\n\n" + \
         summary[:summary_length] + "... " + entry.link
     return message
 
 
 def check_time():
+    """
+    Checks time
+
+    Return:
+        "morning" : if time is 6AM.
+        "afternoon" : if time is 2PM.
+        "night" : if time is 10PM.
+    """
     while True:
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
-        time.sleep(30)
+        time.sleep(1)
         if str(current_time) in ("06:00:00", "06:00:01", "06:00:02"):
             time.sleep(1)
             return "morning"
@@ -71,6 +81,8 @@ def feed_parser():
 
 
 def main():
+    """Main function responsible for starting the bot
+    """
     auth = tweepy.OAuthHandler(keys.API_KEY, keys.API_SECRET_KEY)
     auth.set_access_token(keys.ACCESS_TOKEN, keys.ACCESS_TOKEN_SECRET)
 
