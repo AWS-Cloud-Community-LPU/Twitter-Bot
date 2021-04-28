@@ -31,10 +31,12 @@ def message_creator(entry) -> str:
     cleanr = re.compile(
         '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
     summary = re.sub(cleanr, '', entry.summary)
-    extra_length = len(entry.title) + 31    # Twitter URL Shortner: 31 Character
+    # Twitter URL Shortner: 31 Character
+    # Hashtag awseducate: 11 Character
+    extra_length = len(entry.title) + 31 + 11
     summary_length = 280 - extra_length     # Max tweet length: 280 Character
     message = entry.title + "\n\n" + \
-        summary[:summary_length] + "... " + entry.link
+        summary[:summary_length] + "...\n" + "#awseducate" + entry.link
     return message
 
 
