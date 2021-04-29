@@ -36,7 +36,7 @@ def message_creator(entry) -> str:
     extra_length = len(entry.title) + 31 + 11
     summary_length = 280 - extra_length     # Max tweet length: 280 Character
     message = entry.title + "\n\n" + \
-        summary[:summary_length] + "...\n" + "#awseducate" + entry.link
+        summary[:summary_length] + "...\n" + "#awseducate\n" + entry.link
     return message
 
 
@@ -98,12 +98,12 @@ def main():
         message = message_creator(entry)
         try:
             api.update_status(message)
-        except TweepError:
-            print(f"Error at: {datetime.now()} with:\n{message}\n\n", file=open(
+        except:
+            print(f"{datetime.now()}: Error with:\n{message}\n\n", file=open(
                 C.LOG_FILE, 'a+'))
 
 
 if __name__ == "__main__":
-    print(f"\n\nBot Started at {datetime.now()}\n",
+    print(f"\n{datetime.now()}: Bot Started\n",
           file=open(C.LOG_FILE, 'a+'))
     main()
