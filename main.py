@@ -98,12 +98,17 @@ def main():
         message = message_creator(entry)
         try:
             api.update_status(message)
-        except:
-            print(f"{datetime.now()}: Error with:\n{message}\n\n", file=open(
+        except tweepy.error.TweepError as err:
+            error_message = f"{datetime.now()}: Error with message:\n{message}\n\n"
+            print(error_message, file=open(
                 C.LOG_FILE, 'a+'))
+            recipient_id = api.get_user("garvit__joshi").id_str
+            api.send_direct_message(recipient_id, error_message)
+            api.send_direct_message(recipient_id, str(err))
 
 
 if __name__ == "__main__":
     print(f"\n{datetime.now()}: Bot Started\n",
           file=open(C.LOG_FILE, 'a+'))
+    print(f"\n{datetime.now()}: Bot Started\n")
     main()
