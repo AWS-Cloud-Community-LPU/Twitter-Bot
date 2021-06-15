@@ -9,8 +9,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    allow:
-      - dependency-name: "feedparser"
-        dependency-type: "direct"
-      - dependency-name: "tweepy"
-        dependency-type: "direct"
