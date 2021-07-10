@@ -1,3 +1,2 @@
 feedparser==6.0.8
-requests==2.25.1
 tweepy==3.10.0
