@@ -11,7 +11,9 @@
 # SOFTWARE.
 
 # Contributed By: Ritik Kumar(https://github.com/ritikkr)
-
+import logger
+import time
+import tweepy
 
 
 def retweet_tweets_with_hashtag(api, need_hashtags):

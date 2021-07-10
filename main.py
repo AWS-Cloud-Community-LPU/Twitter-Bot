@@ -14,11 +14,31 @@
 import re
 from datetime import datetime
 import time
-import secrets as keys
 from os import path
+import configparser
 import feedparser
 import tweepy
 import constants as C
+
+
+def get_time():
+    """Gets Current Time
+
+    Returns:
+        HH:MM:SS AM/PM DD/MM/YYYY
+    """
+    return datetime.now().strftime('%I:%M:%S %p %d/%m/%Y')
+
+
+def print_logs(message):
+    """Creates logs in logs.txt
+
+    Keyword arguments:
+        message : Message to be logged
+    """
+    print("-------------", file=open(C.LOG_FILE, 'a+'))
+    print(message, file=open(C.LOG_FILE, 'a+'))
+    print("-------------\n\n", file=open(C.LOG_FILE, 'a+'))
 
 
 def message_creator(entry) -> str:
@@ -85,30 +105,45 @@ def feed_parser():
 def main():
     """Main function responsible for starting the bot
     """
-    auth = tweepy.OAuthHandler(keys.API_KEY, keys.API_SECRET_KEY)
-    auth.set_access_token(keys.ACCESS_TOKEN, keys.ACCESS_TOKEN_SECRET)
-
-    api = tweepy.API(auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
+    config = configparser.ConfigParser()
+    try:
+        config.read('secrets.ini')
+        auth = tweepy.OAuthHandler(
+            config['KEYS']['API_KEY'], config['KEYS']['API_SECRET_KEY'])
+        auth.set_access_token(
+            config['KEYS']['ACCESS_TOKEN'], config['KEYS']['ACCESS_TOKEN_SECRET'])
+        api = tweepy.API(auth, wait_on_rate_limit=True,
+                         wait_on_rate_limit_notify=True)
+    except KeyError:
+        message = "File or Keys not Found"
+        print(message)
+        print_logs(message)
+        exit(1)
 
     while True:
-        entry = feed_parser()
-        time_status = check_time()
-        print(entry.title, file=open(C.TITLE_STORE, 'a+'))
-        message = message_creator(entry)
         try:
-            api.update_status(message)
-        except tweepy.error.TweepError as err:
-            error_message = f"{datetime.now()}: Error with message:\n{message}\n\n"
-            print(error_message, file=open(
-                C.LOG_FILE, 'a+'))
-            recipient_id = api.get_user("garvit__joshi").id_str
-            api.send_direct_message(recipient_id, error_message)
-            api.send_direct_message(recipient_id, str(err))
+            entry = feed_parser()
+            time_status = check_time()
+            print(entry.title, file=open(C.TITLE_STORE, 'a+'))
+            message = message_creator(entry)
+            try:
+                api.update_status(message)
+                success_message = f"{get_time()}: Message Successfully tweeted:\n{message}"
+                print_logs(success_message)
+            except tweepy.error.TweepError as err:
+                error_message = f"{get_time()}: Error with message:\n{message}\n{err}"
+                print_logs(error_message)
+                recipient_id = api.get_user("garvit__joshi").id_str
+                api.send_direct_message(recipient_id, error_message)
+                api.send_direct_message(recipient_id, str(err))
+                exit(1)
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            exit(1)
 
 
 if __name__ == "__main__":
-    print(f"\n{datetime.now()}: Bot Started\n",
+    print(f"\n{get_time()}: Bot Started\n",
           file=open(C.LOG_FILE, 'a+'))
-    print(f"\n{datetime.now()}: Bot Started\n")
+    print(f"\n{get_time()}: Bot Started\n")
     main()

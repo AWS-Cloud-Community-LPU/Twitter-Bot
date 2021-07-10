@@ -8,6 +8,7 @@ __pycache__/
 
 # Auth Toks File
 secrets.py
+secrets.ini
 
 #logs and title file and testing files
 titles.txt
