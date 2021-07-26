@@ -67,6 +67,7 @@ def check_time():
     Return:
         "morning" : if time is 6AM.
         "afternoon" : if time is 2PM.
+        "evening" : if time is 5PM.
         "night" : if time is 10PM.
     """
     while True:
@@ -79,6 +80,9 @@ def check_time():
         if str(current_time) in ("14:00:00", "14:00:01", "14:00:02"):
             time.sleep(1)
             return "afternoon"
+        if str(current_time) in ("17:00:00", "17:00:01", "17:00:02"):
+            time.sleep(1)
+            return "evening"
         if str(current_time) in ("22:00:00", "22:00:01", "22:00:02"):
             time.sleep(1)
             return "night"
