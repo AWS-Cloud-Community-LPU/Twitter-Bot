@@ -1,19 +1,22 @@
-# MIT License
+"""
+MIT License
 
-# Copyright (c) 2021 AWS Cloud Community LPU
+Copyright (c) 2021 AWS Cloud Community LPU
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 
 
 import re
 from datetime import datetime
 import time
+import sys
 from os import path
 import configparser
 import feedparser
@@ -30,15 +33,16 @@ def get_time():
     return datetime.now().strftime('%I:%M:%S %p %d/%m/%Y')
 
 
-def print_logs(message):
+def print_logs(log_message):
     """Creates logs in logs.txt
 
     Keyword arguments:
         message : Message to be logged
     """
-    print("-------------", file=open(C.LOG_FILE, 'a+'))
-    print(message, file=open(C.LOG_FILE, 'a+'))
-    print("-------------\n\n", file=open(C.LOG_FILE, 'a+'))
+    line = "-------------\n"
+    log_message = line + log_message + line
+    with open(C.LOG_FILE, 'a+', encoding='utf8') as log_file:
+        print(log_message, file=log_file)
 
 
 def message_creator(entry) -> str:
@@ -92,9 +96,10 @@ def feed_parser():
     """Parses feed of AWS What's new and gives non duplicate news.
     """
     if not path.exists(C.TITLE_STORE):
-        open(C.TITLE_STORE, 'a').close()
+        with open(C.TITLE_STORE, 'a', encoding='utf-8'):
+            pass
     news_feed = feedparser.parse(C.AWS_FEED_URL)
-    with open(C.TITLE_STORE, "r") as title_file:
+    with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
         line_titles = title_file.readlines()
         for entry in news_feed.entries:
             flag = 0
@@ -119,16 +124,17 @@ def main():
         api = tweepy.API(auth, wait_on_rate_limit=True,
                          wait_on_rate_limit_notify=True)
     except KeyError:
-        message = "File or Keys not Found"
+        message = "File or Keys not Found\n"
         print(message)
         print_logs(message)
-        exit(1)
+        sys.exit(1)
 
     while True:
         try:
             entry = feed_parser()
-            time_status = check_time()
-            print(entry.title, file=open(C.TITLE_STORE, 'a+'))
+            check_time()
+            with open(C.TITLE_STORE, 'a+', encoding='utf-8') as title_file:
+                print(entry.title, file=title_file)
             message = message_creator(entry)
             try:
                 api.update_status(message)
@@ -140,14 +146,14 @@ def main():
                 recipient_id = api.get_user("garvit__joshi").id_str
                 api.send_direct_message(recipient_id, error_message)
                 api.send_direct_message(recipient_id, str(err))
-                exit(1)
+                sys.exit(1)
         except KeyboardInterrupt:
             print("\nExiting...")
-            exit(1)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
-    print(f"\n{get_time()}: Bot Started\n",
-          file=open(C.LOG_FILE, 'a+'))
-    print(f"\n{get_time()}: Bot Started\n")
+    start_text = f"\n{get_time()}: Bot Started\n"
+    print_logs(start_text)
+    print(start_text)
     main()
