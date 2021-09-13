@@ -40,6 +40,7 @@ def print_logs(log_message):
         message : Message to be logged
     """
     line = "-------------\n"
+    log_message = log_message + "\n"
     log_message = line + log_message + line
     with open(C.LOG_FILE, 'a+', encoding='utf8') as log_file:
         print(log_message, file=log_file)
