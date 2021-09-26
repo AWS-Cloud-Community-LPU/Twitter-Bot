@@ -1,5 +1,5 @@
 # Twitter-Bot
-Official Twitter Bot for AWS Cloud Community LPU
+Official [Twitter Account](https://twitter.com/AWSCCLPU) Bot for AWS Cloud Community LPU
 
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/AWS-Cloud-Community-LPU/Twitter-Bot)
 
