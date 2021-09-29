@@ -65,34 +65,6 @@ def message_creator(entry) -> str:
     return message
 
 
-def check_time():
-    """
-    Checks time
-
-    Return:
-        "morning" : if time is 6AM.
-        "afternoon" : if time is 2PM.
-        "evening" : if time is 5PM.
-        "night" : if time is 10PM.
-    """
-    while True:
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        time.sleep(1)
-        if str(current_time) in ("06:00:00", "06:00:01", "06:00:02"):
-            time.sleep(1)
-            return "morning"
-        if str(current_time) in ("14:00:00", "14:00:01", "14:00:02"):
-            time.sleep(1)
-            return "afternoon"
-        if str(current_time) in ("17:00:00", "17:00:01", "17:00:02"):
-            time.sleep(1)
-            return "evening"
-        if str(current_time) in ("22:00:00", "22:00:01", "22:00:02"):
-            time.sleep(1)
-            return "night"
-
-
 def feed_parser():
     """Parses feed of AWS What's new and gives non duplicate news.
     """
@@ -125,7 +97,7 @@ def main():
         api = tweepy.API(auth, wait_on_rate_limit=True,
                          wait_on_rate_limit_notify=True)
     except KeyError:
-        message = "File or Keys not Found\n"
+        message = "File or Keys not Found"
         print(message)
         print_logs(message)
         sys.exit(1)
@@ -133,7 +105,7 @@ def main():
     while True:
         try:
             entry = feed_parser()
-            check_time()
+            time.sleep(300)  # wait for 5 Minutes until next news
             with open(C.TITLE_STORE, 'a+', encoding='utf-8') as title_file:
                 print(entry.title, file=title_file)
             message = message_creator(entry)
@@ -154,7 +126,7 @@ def main():
 
 
 if __name__ == "__main__":
-    start_text = f"\n{get_time()}: Bot Started\n"
+    start_text = f"{get_time()}: Bot Started"
     print_logs(start_text)
     print(start_text)
     main()
