@@ -67,6 +67,10 @@ def message_creator(entry) -> str:
 
 def feed_parser():
     """Parses feed of AWS What's new and gives non duplicate news.
+
+    Returns:
+        News: In case of a non-duplicate news
+        None: In case of a no non-duplicate news found
     """
     if not path.exists(C.TITLE_STORE):
         with open(C.TITLE_STORE, 'a', encoding='utf-8'):
@@ -81,7 +85,22 @@ def feed_parser():
                     flag = 1
             if flag == 0:
                 return entry
-    return news_feed.entries[0]
+    return None
+
+
+def send_exception(api: tweepy.API, err: Exception, message: str):
+    """Sends Exception with information to the developer's account
+
+    Keyword arguments:
+        api : Tweepy.API
+        err : Exception message
+        message: The string that caused the exception.
+    """
+    error_message = f"{get_time()}: Error with message:\n{message}\n{err}"
+    print_logs(error_message)
+    recipient_id = api.get_user(screen_name="garvit__joshi").id_str
+    api.send_direct_message(recipient_id, error_message)
+    api.send_direct_message(recipient_id, str(err))
 
 
 def main():
@@ -94,8 +113,7 @@ def main():
             config['KEYS']['API_KEY'], config['KEYS']['API_SECRET_KEY'])
         auth.set_access_token(
             config['KEYS']['ACCESS_TOKEN'], config['KEYS']['ACCESS_TOKEN_SECRET'])
-        api = tweepy.API(auth, wait_on_rate_limit=True,
-                         wait_on_rate_limit_notify=True)
+        api = tweepy.API(auth, wait_on_rate_limit=True)
     except KeyError:
         message = "File or Keys not Found"
         print(message)
@@ -105,6 +123,10 @@ def main():
     while True:
         try:
             entry = feed_parser()
+            if(entry == None):
+                # Wait for 1 hour for again parsing the entry if no non-duplicate news is found
+                time.sleep(3600)
+                continue
             time.sleep(300)  # wait for 5 Minutes until next news
             with open(C.TITLE_STORE, 'a+', encoding='utf-8') as title_file:
                 print(entry.title, file=title_file)
@@ -113,16 +135,18 @@ def main():
                 api.update_status(message)
                 success_message = f"{get_time()}: Message Successfully tweeted:\n{message}"
                 print_logs(success_message)
-            except tweepy.error.TweepError as err:
-                error_message = f"{get_time()}: Error with message:\n{message}\n{err}"
-                print_logs(error_message)
-                recipient_id = api.get_user("garvit__joshi").id_str
-                api.send_direct_message(recipient_id, error_message)
-                api.send_direct_message(recipient_id, str(err))
+            except Exception as err:
+                send_exception(api, err, message)
+                end_text = f"{get_time()}: Bot Stopped by Exception"
+                print_logs(end_text)
+                print(end_text)
                 sys.exit(1)
+
         except KeyboardInterrupt:
-            print("\nExiting...")
-            sys.exit(1)
+            end_text = f"{get_time()}: Bot Stopped by User"
+            print_logs(end_text)
+            print(end_text)
+            sys.exit(0)
 
 
 if __name__ == "__main__":
