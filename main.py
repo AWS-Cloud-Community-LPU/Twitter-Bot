@@ -124,10 +124,9 @@ def main():
         try:
             entry = feed_parser()
             if(entry == None):
-                # Wait for 5 min for again parsing the entry if no non-duplicate news is found
-                time.sleep(300)
+                # Wait for 10 seconds for again parsing the entry if no non-duplicate news is found
+                time.sleep(10)
                 continue
-            time.sleep(10)  # wait for 10 Seconds until next news
             with open(C.TITLE_STORE, 'a+', encoding='utf-8') as title_file:
                 print(entry.title, file=title_file)
             message = message_creator(entry)
