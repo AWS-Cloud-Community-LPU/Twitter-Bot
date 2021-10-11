@@ -52,6 +52,9 @@ def message_creator(entry) -> str:
 
     Keyword arguments:
         entry : a perticular entry of rss feed used for extracting data.
+    
+    Returns:
+        message: Tweet(str) in 280 character
     """
     cleanr = re.compile(
         '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
@@ -65,8 +68,11 @@ def message_creator(entry) -> str:
     return message
 
 
-def feed_parser():
+def feed_parser(api: tweepy.API):
     """Parses feed of AWS What's new and gives non duplicate news.
+
+    Keyword arguments:
+        api : Tweepy.API
 
     Returns:
         News: In case of a non-duplicate news
@@ -75,7 +81,11 @@ def feed_parser():
     if not path.exists(C.TITLE_STORE):
         with open(C.TITLE_STORE, 'a', encoding='utf-8'):
             pass
-    news_feed = feedparser.parse(C.AWS_FEED_URL)
+    try:
+        news_feed = feedparser.parse(C.AWS_FEED_URL)
+    except Exception as e:
+        time.sleep(10)
+        send_exception(api, e, "Feed Parser")
     with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
         line_titles = title_file.readlines()
         for entry in news_feed.entries:
@@ -122,7 +132,7 @@ def main():
 
     while True:
         try:
-            entry = feed_parser()
+            entry = feed_parser(api)
             if(entry == None):
                 # Wait for 10 seconds for again parsing the entry if no non-duplicate news is found
                 time.sleep(10)
