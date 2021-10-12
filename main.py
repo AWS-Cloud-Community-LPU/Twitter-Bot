@@ -110,7 +110,6 @@ def send_exception(api: tweepy.API, err: Exception, message: str):
     print_logs(error_message)
     recipient_id = api.get_user(screen_name="garvit__joshi").id_str
     api.send_direct_message(recipient_id, error_message)
-    api.send_direct_message(recipient_id, str(err))
 
 
 def main():
