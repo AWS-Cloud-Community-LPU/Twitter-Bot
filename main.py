@@ -84,8 +84,9 @@ def feed_parser(api: tweepy.API):
     try:
         news_feed = feedparser.parse(C.AWS_FEED_URL)
     except Exception as e:
-        time.sleep(10)
+        time.sleep(20)
         send_exception(api, e, "Feed Parser")
+        return None
     with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
         line_titles = title_file.readlines()
         for entry in news_feed.entries:
