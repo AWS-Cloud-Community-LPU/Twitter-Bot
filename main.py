@@ -52,7 +52,7 @@ def message_creator(entry) -> str:
 
     Keyword arguments:
         entry : a perticular entry of rss feed used for extracting data.
-    
+
     Returns:
         message: Tweet(str) in 280 character
     """
@@ -133,7 +133,7 @@ def main():
     while True:
         try:
             entry = feed_parser(api)
-            if(entry == None):
+            if entry is None:
                 # Wait for 10 seconds for again parsing the entry if no non-duplicate news is found
                 time.sleep(10)
                 continue
