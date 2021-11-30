@@ -146,10 +146,9 @@ def main():
                 print_logs(success_message)
             except Exception as err:
                 send_exception(api, err, message)
-                end_text = f"{get_time()}: Bot Stopped by Exception"
+                end_text = f"{get_time()}: Bot caught an Exception"
                 print_logs(end_text)
                 print(end_text)
-                sys.exit(1)
 
         except KeyboardInterrupt:
             end_text = f"{get_time()}: Bot Stopped by User"
