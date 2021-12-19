@@ -21,7 +21,7 @@ This will install all the project dependencies.
 
 **File: secrets.ini**
 
-A file ```secrets.ini``` is missing as it contains a tokens to access API of [Twitter Bot](https://twitter.com/AWScommLPU). The file is structured in this way: 
+A file ```secrets.ini``` is missing as it contains a tokens to access API of [Twitter Bot](https://twitter.com/AWSCCLPU). The file is structured in this way: 
 ```
 [KEYS]
 API_KEY = 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
