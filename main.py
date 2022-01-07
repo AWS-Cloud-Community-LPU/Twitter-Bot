@@ -33,15 +33,18 @@ def get_time():
     return datetime.now().strftime('%I:%M:%S %p %d/%m/%Y')
 
 
-def print_logs(log_message):
+def print_logs(log_message, console=False):
     """Creates logs in logs.txt
 
     Keyword arguments:
         message : Message to be logged
+        console : specifies if to print log in console
     """
     line = "-------------\n"
     log_message = log_message + "\n"
     log_message = line + log_message + line
+    if console is True:
+        print(log_message)
     with open(C.LOG_FILE, 'a+', encoding='utf8') as log_file:
         print(log_message, file=log_file)
 
@@ -125,9 +128,8 @@ def main():
             config['KEYS']['ACCESS_TOKEN'], config['KEYS']['ACCESS_TOKEN_SECRET'])
         api = tweepy.API(auth, wait_on_rate_limit=True)
     except KeyError:
-        message = "File or Keys not Found"
-        print(message)
-        print_logs(message)
+        message = "Secrets File or Keys not Found"
+        print_logs(message, True)
         sys.exit(1)
 
     while True:
@@ -147,18 +149,15 @@ def main():
             except Exception as err:
                 send_exception(api, err, message)
                 end_text = f"{get_time()}: Bot caught an Exception"
-                print_logs(end_text)
-                print(end_text)
+                print_logs(end_text, True)
 
         except KeyboardInterrupt:
             end_text = f"{get_time()}: Bot Stopped by User"
-            print_logs(end_text)
-            print(end_text)
+            print_logs(end_text, True)
             sys.exit(0)
 
 
 if __name__ == "__main__":
     start_text = f"{get_time()}: Bot Started"
-    print_logs(start_text)
-    print(start_text)
+    print_logs(start_text, True)
     main()
