@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2021 AWS Cloud Community LPU
+Copyright (c) 2022 AWS Cloud Community LPU
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -30,7 +30,7 @@ def get_time():
     Returns:
         HH:MM:SS AM/PM DD/MM/YYYY
     """
-    return datetime.now().strftime('%I:%M:%S %p %d/%m/%Y')
+    return datetime.now().strftime("%I:%M:%S %p %d/%m/%Y")
 
 
 def print_logs(log_message, console=False):
@@ -45,7 +45,7 @@ def print_logs(log_message, console=False):
     log_message = line + log_message + line
     if console is True:
         print(log_message)
-    with open(C.LOG_FILE, 'a+', encoding='utf8') as log_file:
+    with open(C.LOG_FILE, "a+", encoding="utf8") as log_file:
         print(log_message, file=log_file)
 
 
@@ -59,15 +59,20 @@ def message_creator(entry) -> str:
     Returns:
         message: Tweet(str) in 280 character
     """
-    cleanr = re.compile(
-        '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-    summary = re.sub(cleanr, '', entry.summary)
+    cleanr = re.compile("<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
+    summary = re.sub(cleanr, "", entry.summary)
     # Twitter URL Shortner: 31 Character
     # Hashtag awseducate: 11 Character
     extra_length = len(entry.title) + 31 + 11
-    summary_length = 280 - extra_length     # Max tweet length: 280 Character
-    message = entry.title + "\n\n" + \
-        summary[:summary_length] + "...\n" + "#awseducate\n" + entry.link
+    summary_length = 280 - extra_length  # Max tweet length: 280 Character
+    message = (
+        entry.title
+        + "\n\n"
+        + summary[:summary_length]
+        + "...\n"
+        + "#awseducate\n"
+        + entry.link
+    )
     return message
 
 
@@ -82,7 +87,7 @@ def feed_parser(api: tweepy.API):
         None: In case of a no non-duplicate news found
     """
     if not path.exists(C.TITLE_STORE):
-        with open(C.TITLE_STORE, 'a', encoding='utf-8'):
+        with open(C.TITLE_STORE, "a", encoding="utf-8"):
             pass
     try:
         news_feed = feedparser.parse(C.AWS_FEED_URL)
@@ -95,7 +100,7 @@ def feed_parser(api: tweepy.API):
         for entry in news_feed.entries:
             flag = 0
             for line_title in line_titles:
-                if str(entry.title)+"\n" == line_title:
+                if str(entry.title) + "\n" == line_title:
                     flag = 1
             if flag == 0:
                 return entry
@@ -117,15 +122,16 @@ def send_exception(api: tweepy.API, err: Exception, message: str):
 
 
 def main():
-    """Main function responsible for starting the bot
-    """
+    """Main function responsible for starting the bot"""
     config = configparser.ConfigParser()
     try:
-        config.read('secrets.ini')
+        config.read("secrets.ini")
         auth = tweepy.OAuthHandler(
-            config['KEYS']['API_KEY'], config['KEYS']['API_SECRET_KEY'])
+            config["KEYS"]["API_KEY"], config["KEYS"]["API_SECRET_KEY"]
+        )
         auth.set_access_token(
-            config['KEYS']['ACCESS_TOKEN'], config['KEYS']['ACCESS_TOKEN_SECRET'])
+            config["KEYS"]["ACCESS_TOKEN"], config["KEYS"]["ACCESS_TOKEN_SECRET"]
+        )
         api = tweepy.API(auth, wait_on_rate_limit=True)
     except KeyError:
         message = "Secrets File or Keys not Found"
@@ -139,12 +145,14 @@ def main():
                 # Wait for 10 seconds for again parsing the entry if no non-duplicate news is found
                 time.sleep(10)
                 continue
-            with open(C.TITLE_STORE, 'a+', encoding='utf-8') as title_file:
+            with open(C.TITLE_STORE, "a+", encoding="utf-8") as title_file:
                 print(entry.title, file=title_file)
             message = message_creator(entry)
             try:
                 api.update_status(message)
-                success_message = f"{get_time()}: Message Successfully tweeted:\n{message}"
+                success_message = (
+                    f"{get_time()}: Message Successfully tweeted:\n{message}"
+                )
                 print_logs(success_message)
             except Exception as err:
                 send_exception(api, err, message)
