@@ -41,7 +41,8 @@ def print_logs(log_message, console=False):
         console : specifies if to print log in console
     """
     line = "-------------\n"
-    log_message = log_message + "\n"
+    if log_message[-1] != "\n":
+        log_message = log_message + "\n"
     log_message = line + log_message + line
     if console is True:
         print(log_message)
@@ -117,11 +118,12 @@ def send_exception(api: tweepy.API, err: Exception, message: str):
         message: The string that caused the exception.
     """
     error_message = f"{get_time()}: Error with message:\n{message}\n{err}\n"
+    log_text = error_message
     for dev in C.DEVELOPERS:
-        error_message = error_message + f"Sending message to developer: {dev}\n"
+        log_text = log_text + f"Sending message to developer: {dev}\n"
         recipient_id = api.get_user(screen_name=dev).id_str
         api.send_direct_message(recipient_id, error_message)
-    print_logs(error_message)
+    print_logs(log_message=log_text, console=True)
 
 
 def main():
