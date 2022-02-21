@@ -98,11 +98,12 @@ def feed_parser(api: tweepy.API):
     with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
         line_titles = title_file.readlines()
         for entry in news_feed.entries:
-            flag = 0
-            for line_title in line_titles:
+            found_flag = 0  # turns to 1 if entry has already been tweeted
+            for line_title in reversed(line_titles):
                 if str(entry.title) + "\n" == line_title:
-                    flag = 1
-            if flag == 0:
+                    found_flag = 1
+                    break
+            if found_flag == 0:
                 return entry
     return None
 
