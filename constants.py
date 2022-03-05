@@ -18,4 +18,9 @@ LOG_FILE = "Main.log"  # log file
 
 AWS_FEED_URL = "https://aws.amazon.com/about-aws/whats-new/recent/feed/"  # RSS feed URL
 
-DEVELOPERS = ["garvit__joshi", "ChangmaiSanyog"]
+DEVELOPERS = [
+    "garvit__joshi",
+    "ChangmaiSanyog",
+]  # Used for Sending Exceptions to the Developers
+
+line_titles = []  # Used for saving titles to Memory

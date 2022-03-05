@@ -50,6 +50,26 @@ def print_logs(log_message, console=False):
         print(log_message, file=log_file)
 
 
+def load_titles():
+    """Loades Titles file into memory"""
+    log_text = "Loading Previously Tweeted Message to Memory"
+    print_logs(log_message=log_text, console=True)
+    try:
+        with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
+            log_text = f"{C.TITLE_STORE} found"
+            C.line_titles = title_file.readlines()
+    except FileNotFoundError:
+        with open(C.TITLE_STORE, "w", encoding="utf-8") as title_file:
+            pass
+        log_text = f"{C.TITLE_STORE} not Present! Created a new empty file"
+    finally:
+        if len(C.line_titles) == 0:
+            log_text = log_text + "\nAppending Dummy data to memory"
+            C.line_titles.append("Lorem ipsum dolor sit amet")
+        log_text = log_text + f"\nLoading Completed for {len(C.line_titles)} messages"
+        print_logs(log_message=log_text, console=True)
+
+
 def message_creator(entry) -> str:
     """
     Returns news in a proper format
@@ -96,16 +116,15 @@ def feed_parser(api: tweepy.API):
         time.sleep(20)
         send_exception(api, err, "Feed Parser")
         return None
-    with open(C.TITLE_STORE, "r", encoding="utf-8") as title_file:
-        line_titles = title_file.readlines()
-        for entry in news_feed.entries:
-            found_flag = 0  # turns to 1 if entry has already been tweeted
-            for line_title in reversed(line_titles):
-                if str(entry.title) + "\n" == line_title:
-                    found_flag = 1
-                    break
-            if found_flag == 0:
-                return entry
+    for entry in news_feed.entries:
+        found_flag = 0  # turns to 1 if entry has already been tweeted
+        for line_title in reversed(C.line_titles):
+            if str(entry.title) + "\n" == line_title:
+                found_flag = 1
+                break
+        if found_flag == 0:
+            C.line_titles.append(entry.title + "\n")
+            return entry
     return None
 
 
@@ -173,4 +192,5 @@ def main():
 if __name__ == "__main__":
     start_text = f"{get_time()}: Bot Started"
     print_logs(start_text, True)
+    load_titles()
     main()
