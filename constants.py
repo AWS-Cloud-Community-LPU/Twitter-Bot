@@ -12,6 +12,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+EXCEPTION_THRESHOLD = 3  # Bot Exits after reaching exception threshold
+
 TITLE_STORE = "titles.txt"  # logs titles of news that are already sent
 
 LOG_FILE = "Main.log"  # log file

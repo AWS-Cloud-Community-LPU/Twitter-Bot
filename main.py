@@ -137,12 +137,18 @@ def send_exception(api: tweepy.API, err: Exception, message: str):
         message: The string that caused the exception.
     """
     error_message = f"{get_time()}: Error with message:\n{message}\n{err}\n"
+    C.EXCEPTION_THRESHOLD = C.EXCEPTION_THRESHOLD - 1
+    if C.EXCEPTION_THRESHOLD <= 0:
+        error_message = error_message + "EXCEPTION THRESHOLD REACHED...\n"
+        error_message = error_message + "Exiting..."
     log_text = error_message
     for dev in C.DEVELOPERS:
         log_text = log_text + f"Sending message to developer: {dev}\n"
         recipient_id = api.get_user(screen_name=dev).id_str
         api.send_direct_message(recipient_id, error_message)
     print_logs(log_message=log_text, console=True)
+    if C.EXCEPTION_THRESHOLD <= 0:
+        sys.exit(-1)
 
 
 def main():
@@ -160,7 +166,7 @@ def main():
     except KeyError:
         message = "Secrets File or Keys not Found"
         print_logs(message, True)
-        sys.exit(1)
+        sys.exit(-1)
 
     while True:
         try:
