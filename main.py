@@ -139,8 +139,8 @@ def send_exception(api: tweepy.API, err: Exception, message: str):
     error_message = f"{get_time()}: Error with message:\n{message}\n{err}\n"
     C.EXCEPTION_THRESHOLD = C.EXCEPTION_THRESHOLD - 1
     if C.EXCEPTION_THRESHOLD <= 0:
-        error_message = error_message + "EXCEPTION THRESHOLD REACHED...\n"
-        error_message = error_message + "Exiting..."
+        error_message = error_message + "EXCEPTION THRESHOLD REACHED\n"
+        error_message = error_message + "Exiting\n"
     log_text = error_message
     for dev in C.DEVELOPERS:
         log_text = log_text + f"Sending message to developer: {dev}\n"
