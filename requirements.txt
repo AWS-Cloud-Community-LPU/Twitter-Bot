@@ -1,2 +1,2 @@
 feedparser==6.0.9
-tweepy==4.9.0
+tweepy==4.10.0
