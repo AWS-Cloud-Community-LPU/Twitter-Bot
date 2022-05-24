@@ -1,2 +1,2 @@
-feedparser==6.0.9
+feedparser==6.0.10
 tweepy==4.10.0
